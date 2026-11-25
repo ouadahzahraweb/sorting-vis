@@ -1,0 +1,107 @@
+const barsContainer = document.getElementById("bars");
+const shuffleBtn = document.getElementById("shuffleBtn");
+const startBtn = document.getElementById("startBtn");
+const speedInput = document.getElementById("speed");
+const comparisonsEl = document.getElementById("comparisons");
+const swapsEl = document.getElementById("swaps");
+
+const NUM_BARS = 20;
+let values = [];
+let bars = [];
+let sorting = false;
+let comparisons = 0;
+let swaps = 0;
+
+// Wait for a number of ms (controls animation speed)
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Delay based on the speed slider: higher value = slower
+function delay() {
+  return 310 - Number(speedInput.value);
+}
+
+// Create a random array and draw it
+function shuffle() {
+  if (sorting) return;
+  comparisons = 0;
+  swaps = 0;
+  comparisonsEl.textContent = 0;
+  swapsEl.textContent = 0;
+
+  values = Array.from({ length: NUM_BARS }, () => Math.floor(Math.random() * 280) + 20);
+  barsContainer.innerHTML = "";
+  bars = values.map(value => {
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    bar.style.height = value + "px";
+    barsContainer.appendChild(bar);
+    return bar;
+  });
+}
+
+// Update bar heights from the values array
+function render() {
+  bars.forEach((bar, i) => {
+    bar.style.height = values[i] + "px";
+  });
+}
+
+// Mark everything green at the end
+function markAllSorted() {
+  bars.forEach(bar => {
+    bar.classList.remove("active");
+    bar.classList.add("sorted");
+  });
+}
+
+// The actual bubble sort, with animation
+async function bubbleSort() {
+  sorting = true;
+  startBtn.disabled = true;
+  shuffleBtn.disabled = true;
+
+  for (let i = 0; i < values.length - 1; i++) {
+    let swapped = false;
+
+    for (let j = 0; j < values.length - 1 - i; j++) {
+      // highlight the two bars being compared
+      bars[j].classList.add("active");
+      bars[j + 1].classList.add("active");
+
+      comparisons++;
+      comparisonsEl.textContent = comparisons;
+
+      await sleep(delay());
+
+      if (values[j] > values[j + 1]) {
+        // swap the values and redraw
+        [values[j], values[j + 1]] = [values[j + 1], values[j]];
+        swaps++;
+        swapsEl.textContent = swaps;
+        render();
+        swapped = true;
+      }
+
+      bars[j].classList.remove("active");
+      bars[j + 1].classList.remove("active");
+    }
+
+    // the last bar in this pass is now in its final position
+    bars[values.length - 1 - i].classList.add("sorted");
+
+    if (!swapped) break; // already sorted, stop early
+  }
+
+  markAllSorted();
+  sorting = false;
+  startBtn.disabled = false;
+  shuffleBtn.disabled = false;
+}
+
+shuffleBtn.addEventListener("click", shuffle);
+startBtn.addEventListener("click", bubbleSort);
+
+// Start with a shuffled array
+shuffle();
