@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sorting Visualizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Sorting Visualizer</h1>
+  <p class="subtitle">Bubble sort, animated step by step</p>
+
+  <div id="bars"></div>
+
+  <div class="controls">
+    <button id="shuffleBtn">Shuffle</button>
+    <button id="startBtn">Start</button>
+    <label>
+      Speed
+      <input id="speed" type="range" min="10" max="300" value="80">
+    </label>
+  </div>
+
+  <p class="stats">
+    Comparisons: <span id="comparisons">0</span> ·
+    Swaps: <span id="swaps">0</span>
+  </p>
+
+  <script src="script.js"></script>
+</body>
+</html>
